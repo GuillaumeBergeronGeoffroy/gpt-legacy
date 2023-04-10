@@ -4,6 +4,32 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>GPT-LEGACY</title>
+    <!-- register css/index.css -->
+    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="css/loader.css" />
+    <link rel="stylesheet" href="css/progress.css" />
   </head>
-  <body></body>
+  <body>
+    <!-- add a step progress bar with 3 steps 1. Add code 2. Process Code 3. Prompt -->
+    <script src="domManager.js"></script>
+    <script src="loader.js"></script>
+    <script src="progress.js"></script>
+  </body>
 </html>
+
+<script>
+  let current_step = 1;
+  // if current step is set in local storage overwrite
+  try {
+    if (localStorage.getItem("current_step")) {
+      current_step = localStorage.getItem("current_step");
+    }
+  } catch (e) {
+    console.log("local storage not available");
+  }
+  window.addEventListener("load", () => {
+    registerFileUploadListener();
+    registerProgressBarListener();
+    setProgressBarActiveStep(current_step);
+  });
+</script>

@@ -1,0 +1,20 @@
+#add-code-template {
+  margin: auto;
+  max-width: 500px;
+}
+#fileList {
+  height: 300px;
+  overflow: scroll;
+  border: 5px solid #181818;
+  margin-top: 25px;
+  border-radius: 5px;
+}
+#fileList li {
+  width: 100%;
+  padding: 17px;
+  font-size: 18px;
+  background: #101010;
+}
+#fileList li:hover {
+  background: #181818;
+}
