@@ -11,20 +11,20 @@ function registerSettings() {
   settingsObject = addTemplate("settings-template", settingsTemplate);
   settingsTargetElem = settingsObject.node.querySelector("#settings-template");
   let settingsImg = settingsObject.node.querySelector(".settings-img");
+  let apiKeyInput = settingsObject.node.querySelector("#api-key");
   // rewrite this to use domManager
   settingsImg.addEventListener("click", () => {
     if (settingsImg.src.includes("img/gear.png")) {
       settingsImg.src = "img/close.png";
       settingsTargetElem.classList.add("active");
-      // scrollToBottom of page
-      // show all class setting-prompt
+      // set focus to api-key input
+      apiKeyInput.focus();
     } else {
       settingsImg.src = "img/gear.png";
       settingsTargetElem.classList.remove("active");
       // hide all class setting-prompt
     }
   });
-  let apiKeyInput = settingsObject.node.querySelector("#api-key");
   apiKeyInput.addEventListener("change", (e) => {
     apiKey = e.target.value;
     setApiKeyToLocalStorage();

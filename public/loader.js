@@ -32,10 +32,6 @@ function registerLoader() {
       const file = files[i];
       const fileExtension = file.name.split(".").pop();
 
-      //   get file path
-      const filePath = file.webkitRelativePath;
-      console.log(filePath);
-
       const reader = new FileReader();
       reader.onload = (e) => {
         const fileContent = e.target.result;
@@ -68,7 +64,7 @@ function initializeFileItemsFromFilesData() {
 
 function addFileItemToDOM(file) {
   const listItem = document.createElement("li");
-  listItem.innerHTML = `Title: ${file.name} | Extension: ${file.fileExtension}`;
+  listItem.innerHTML = `Title: ${file.name} - Extension: ${file.fileExtension}`;
   listItem.onclick = () => {
     // remove dom element and remove from files_data
     delete files_data[file.id];

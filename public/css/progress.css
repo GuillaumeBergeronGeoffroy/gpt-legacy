@@ -20,6 +20,7 @@
   border-bottom: 5px solid #202020;
   position: relative;
   pointer-events: none;
+  transition: all 0.5s;
 }
 .step.active {
   opacity: 1;
@@ -33,7 +34,7 @@
   transform: translateX(-50%);
   cursor: pointer;
   font-size: 20px;
-  transition: all 0.5s ease;
+  transition: all 0.5s;
   width: 100%;
   text-align: center;
   height: 70px;
@@ -43,6 +44,8 @@
 }
 .step.active .next {
   opacity: 1;
+}
+.step:not(.process).active .next {
   pointer-events: auto;
 }
 .step.active .next:hover {
@@ -61,7 +64,4 @@
   opacity: 1;
   left: 50%;
   transform: translateX(-50%);
-}
-.step.active .next.error {
-  color: rgb(255, 0, 0);
 }

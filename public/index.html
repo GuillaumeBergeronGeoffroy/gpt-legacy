@@ -7,39 +7,45 @@
     <!-- register css/index.css -->
     <link rel="stylesheet" href="css/index.css" />
     <link rel="stylesheet" href="css/loader.css" />
+    <link rel="stylesheet" href="css/processor.css" />
     <link rel="stylesheet" href="css/progress.css" />
     <link rel="stylesheet" href="css/settings.css" />
+    <link rel="stylesheet" href="css/lds-ellipsis.css" />
   </head>
   <body>
     <!-- add a step progress bar with 3 steps 1. Add code 2. Process Code 3. Prompt -->
     <script src="domManager.js"></script>
     <script src="loader.js"></script>
+    <script src="processor.js"></script>
     <script src="progress.js"></script>
     <script src="settings.js"></script>
   </body>
 </html>
 
 <script>
-  let current_step = 1;
+  let current_step = getStepFromLocalStorage();
   // if current step is set in local storage overwrite
-  try {
-    if (localStorage.getItem("current_step")) {
-      current_step = localStorage.getItem("current_step");
-    }
-  } catch (e) {
-    console.log("local storage not available");
-  }
+
   window.addEventListener("load", () => {
-    if (current_step == 1) {
+    if (current_step == 0) {
       registerLoader();
       getFileListFromLocalStorage();
       initializeFileItemsFromFilesData();
+      console.log("current step is loader");
+      console.log(files_data);
+    } else if (current_step == 1) {
+      console.log("current step is processor");
+      console.log(files_data);
+      registerProcessor();
+      getProcessorStepsFromLocalStorage();
     } else if (current_step == 2) {
-    } else if (current_step == 3) {
     }
     registerProgressBar();
-    setProgressBarActiveStep(current_step);
+    setActiveStep(current_step);
     registerSettings();
     getApiKeyFromLocalStorage();
+    if (current_step == 1) {
+      toggleProcess();
+    }
   });
 </script>

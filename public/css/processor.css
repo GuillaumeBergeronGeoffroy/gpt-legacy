@@ -1,17 +1,17 @@
-#add-code-template {
+#process-code-template {
   margin: auto;
   max-width: 500px;
   transition: all 0.5s;
   opacity: 1;
 }
-#fileList {
+#logsList {
   height: 300px;
   overflow: scroll;
   border: 5px solid #181818;
   margin-top: 25px;
   border-radius: 5px;
 }
-#fileList li {
+#logsList li {
   width: 100%;
   padding: 17px;
   font-size: 18px;
@@ -20,6 +20,24 @@
   -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none; /* Standard syntax */
 }
-#fileList li:hover {
+#logsList li:hover {
   background: #780101;
+}
+#pause-process-img {
+  position: absolute;
+  height: 27px;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  border: 2px solid #000;
+  border-radius: 5px;
+  transition: all 0.5s;
+  padding: 5px;
+}
+#pause-process-img.paused {
+  border-color: #287b2c;
+}
+#pause-process-img.error {
+  border-color: #c30707;
 }

@@ -1,6 +1,7 @@
 * {
   /* margin:0; */
   /* padding:0; */
+  position: relative;
 }
 body {
   margin: 0;
@@ -54,6 +55,10 @@ ul {
     border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 .btn:hover {
-  background-color: #1c68db;
+  background-color: #287b2c;
   border-color: #ffffff;
+}
+/* remove input outline */
+input:focus {
+  outline: none;
 }

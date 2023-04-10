@@ -29,7 +29,6 @@ function addTemplate(templateName, template, appendElementTo = "body") {
   document.querySelector(appendElementTo).appendChild(templateElement);
   // add to domTree object (for future reinitialization of dom based on domTree)
   let parent = searchDomTree(appendElementTo);
-  console.log(parent);
 
   let node = {
     id: id,
