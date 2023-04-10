@@ -8,12 +8,14 @@
     <link rel="stylesheet" href="css/index.css" />
     <link rel="stylesheet" href="css/loader.css" />
     <link rel="stylesheet" href="css/progress.css" />
+    <link rel="stylesheet" href="css/settings.css" />
   </head>
   <body>
     <!-- add a step progress bar with 3 steps 1. Add code 2. Process Code 3. Prompt -->
     <script src="domManager.js"></script>
     <script src="loader.js"></script>
     <script src="progress.js"></script>
+    <script src="settings.js"></script>
   </body>
 </html>
 
@@ -28,8 +30,16 @@
     console.log("local storage not available");
   }
   window.addEventListener("load", () => {
-    registerFileUploadListener();
-    registerProgressBarListener();
+    if (current_step == 1) {
+      registerLoader();
+      getFileListFromLocalStorage();
+      initializeFileItemsFromFilesData();
+    } else if (current_step == 2) {
+    } else if (current_step == 3) {
+    }
+    registerProgressBar();
     setProgressBarActiveStep(current_step);
+    registerSettings();
+    getApiKeyFromLocalStorage();
   });
 </script>

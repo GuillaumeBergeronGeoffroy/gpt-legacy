@@ -1,10 +1,11 @@
 let files_data = {};
+let file_id = 0;
 
-const processContentTemplate = /*html*/ `
+const addCodeTemplate = /*html*/ `
     <div id="add-code-template">
         <h1>Add Codebase</h1>
         <p class="small text-muted">
-        * For now once process starts can't add new files / update codebase.
+        * For now once codebase processed can't add new files / update codebase.
         </p>
         <div id="codebase-instruction">
             <h2>Codebase</h2>
@@ -20,41 +21,81 @@ const processContentTemplate = /*html*/ `
         <ul id="fileList"></ul>
     </div>`;
 
-function registerFileUploadListener() {
-    //  create element with processContentTemplate and append it to body
-    addTemplate('add-code-template', processContentTemplate);
-    
-    document.getElementById('fileInput').addEventListener('change', (event) => {
-        const files = event.target.files;
-        const fileList = document.getElementById('fileList');
-        files_data = {};
-    
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const fileExtension = file.name.split('.').pop();
-    
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const fileContent = e.target.result;
-                files_data[file.name] = {
-                    title: file.name,
-                    extension: fileExtension,
-                    content: fileContent,
-                };
-    
-                const listItem = document.createElement('li');
-                listItem.innerHTML = `Title: ${file.name} | Extension: ${fileExtension}`;
-                listItem.onclick = () => {
-                    // remove dom element and remove from files_data
-                    delete files_data[file.name];
-                    listItem.remove();
-                };
-                fileList.appendChild(listItem);
-    
-                console.log(`File: ${file.name}\nContent:\n${fileContent}\n\n`);
-            };
-    
-            reader.readAsText(file);
-        }
-    });
+function registerLoader() {
+  //  create element with addCodeTemplate and append it to body
+  addTemplate("add-code-template", addCodeTemplate);
+
+  document.getElementById("fileInput").addEventListener("change", (event) => {
+    const files = event.target.files;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const fileExtension = file.name.split(".").pop();
+
+      //   get file path
+      const filePath = file.webkitRelativePath;
+      console.log(filePath);
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const fileContent = e.target.result;
+        file_id++;
+
+        files_data[file_id] = {
+          id: file_id,
+          name: file.name,
+          fileExtension: fileExtension,
+          fileContent: fileContent,
+        };
+
+        addFileItemToDOM(files_data[file_id]);
+        setFileListToLocalStorage();
+      };
+
+      reader.readAsText(file);
+    }
+  });
+}
+
+function initializeFileItemsFromFilesData() {
+  if (files_data.length === 0) return;
+  const fileList = document.getElementById("fileList");
+  fileList.innerHTML = "";
+  for (const file in files_data) {
+    addFileItemToDOM(files_data[file]);
+  }
+}
+
+function addFileItemToDOM(file) {
+  const listItem = document.createElement("li");
+  listItem.innerHTML = `Title: ${file.name} | Extension: ${file.fileExtension}`;
+  listItem.onclick = () => {
+    // remove dom element and remove from files_data
+    delete files_data[file.id];
+    listItem.remove();
+    setFileListToLocalStorage();
+  };
+  fileList.appendChild(listItem);
+}
+
+function setFileListToLocalStorage() {
+  try {
+    localStorage.setItem("files", JSON.stringify(files_data));
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+function getFileListFromLocalStorage() {
+  try {
+    const files = localStorage.getItem("files");
+    if (files) {
+      files_data = JSON.parse(files);
+      if (Object.keys(files_data).length) {
+        file_id = Math.max(...Object.keys(files_data).map((key) => key * 1));
+      }
+    }
+  } catch (e) {
+    console.log(e);
+  }
 }
