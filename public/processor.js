@@ -8,7 +8,7 @@ const processCodeTemplate = /*html*/ `
     <div id="process-code-template">
         <h1>Process Codebase <img id="pause-process-img" src="img/pause.svg" onclick='toggleProcess()' /></h1>
         <div id="process-instruction">
-            <p>Follow progress of the codebase processor.</p>
+            <p>Follow the progress of the codebase processor.</p>
             <p class="small text-muted">
                 * You can pause the process using the pause button above.
             </p>

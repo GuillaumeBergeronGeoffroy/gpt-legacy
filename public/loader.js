@@ -5,7 +5,7 @@ const addCodeTemplate = /*html*/ `
     <div id="add-code-template">
         <h1>Add Codebase</h1>
         <p class="small text-muted">
-        * For now once codebase processed can't add new files / update codebase.
+        * Add -> Process -> Prompt -> Apply or Discard changes -> Iterate.
         </p>
         <div id="codebase-instruction">
             <h2>Codebase</h2>
