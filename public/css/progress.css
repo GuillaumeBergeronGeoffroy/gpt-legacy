@@ -70,17 +70,18 @@
   transition: all 0.5s;
   margin-top: 3px;
   position: absolute;
+  right: 30px;
+  width: 100%;
+  height: 70px;
 }
 .paused .step.active .next .back {
   opacity: 1;
   pointer-events: auto;
   cursor: pointer;
-  right: 55px;
   z-index: 11;
-  width: 100%;
-  height: 70px;
+  right: 55px;
 }
 .paused .step.active .next .back:hover {
   color: #3fbe46;
-  right: 70px;
+  right: 80px;
 }

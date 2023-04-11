@@ -1,9 +1,42 @@
 // each step contains status / progress / data / logs
 let processorNode = null;
-let processor_steps = {};
+let pauseProcessNode = null;
+let processor_beforeunload_event_listener = null;
+let processor_steps = {
+  // get regex patterns to parse files
+  get_parsers: {
+    status: "pending",
+    files_parsers: {
+      // file_id, status, regex_patterns
+    },
+  },
+  // parse files
+  parse_files: {
+    status: "pending",
+    files_parsed: {
+      // files_parsed_id: {file_id, files_parsed_id, status, content}}
+    },
+  },
+  // use files_parsed to prompt for objects / relationships / class / functions and variables
+  // use files_parsed to prompt for
+  abstract_files: {
+    status: "pending",
+    files_parsed_data: {
+      // files_parsed_data_id: {files_parsed_id: {status, objects, relationships, class, functions, variables}
+    },
+  },
+  // use files_parsed_data to build map of objects / relationships / class / functions and variables with pointer to parsed content
+  build_abstract_maps: {
+    status: "pending",
+    // object_map: {
+    //  name: array of files_parsed_id that have this object
+    // }
+  },
+  // on prompt for changes to codebase use maps to determine which parsed content block needs to be updated
+};
+
 // running / paused state
 let processor_state = 1;
-let pauseProcessNode = null;
 
 const processCodeTemplate = /*html*/ `
     <div id="process-code-template" class='steps-template'>
@@ -26,6 +59,19 @@ function registerProcessor() {
     "prepend"
   );
   pauseProcessNode = processorNode.querySelector("#pause-process-img");
+  !processor_beforeunload_event_listener && addUnloadEvent();
+}
+
+function addUnloadEvent() {
+  processor_beforeunload_event_listener = window.addEventListener(
+    "beforeunload",
+    (e) => {
+      if (processor_state === 1) {
+        e.preventDefault(); //per the standard
+        e.returnValue = "";
+      }
+    }
+  );
 }
 
 function getProcessorStepsFromLocalStorage() {
@@ -69,4 +115,42 @@ function unpauseProcess() {
   unpauseLoaderProcessAnimation();
 }
 
-function processCode() {}
+function processCode(step = "get_parsers") {
+  if (processor_state === 0) {
+    return;
+  }
+  // if files_data_changed is true, then we need to evaluate which files are new
+  if (files_data_changed) {
+    step = "get_parsers";
+    files_data_changed = false;
+    // processor_steps.get_parsers.status
+    // foreach processor_steps set status to pending
+    Object.values(processor_steps).forEach((step) => {
+      step.status = "pending";
+    });
+  }
+
+  switch (step) {
+    case "get_parsers":
+      getParsers();
+      break;
+    case "parse_files":
+      parseFiles();
+      break;
+    case "abstract_files":
+      abstractFiles();
+      break;
+    case "build_abstract_maps":
+      buildAbstractMaps();
+    default:
+      break;
+  }
+}
+
+function getParsers() {}
+
+function parseFiles() {}
+
+function abstractFiles() {}
+
+function buildAbstractMaps() {}

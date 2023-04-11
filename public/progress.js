@@ -71,6 +71,7 @@ function setActiveStep(step_index, init = false) {
   } else if (current_step == 1) {
     console.log(files_data);
     registerProcessor();
+    processCode();
   } else if (current_step == 2) {
   }
   if (init) {

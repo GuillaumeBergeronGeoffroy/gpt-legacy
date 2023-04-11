@@ -1,4 +1,5 @@
 let files_data = {};
+let files_data_changed = false;
 let file_id = 0;
 let loaderNode = null;
 
@@ -71,11 +72,13 @@ function initializeFileItemsFromFilesData() {
 function addFileItemToDOM(file) {
   const listItem = document.createElement("li");
   listItem.innerHTML = `Title: ${file.name} - Extension: ${file.fileExtension}`;
+  files_data_changed = true;
   listItem.onclick = () => {
     // remove dom element and remove from files_data
     delete files_data[file.id];
     listItem.remove();
     setFileListToLocalStorage();
+    files_data_changed = true;
   };
   fileList.appendChild(listItem);
 }

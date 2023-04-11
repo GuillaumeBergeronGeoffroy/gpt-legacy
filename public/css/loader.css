@@ -12,7 +12,7 @@
   border-radius: 5px;
 }
 #fileList li {
-  width: 100%;
+  width: calc(100% - 34px);
   padding: 17px;
   font-size: 18px;
   background: #101010;
