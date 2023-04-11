@@ -48,7 +48,7 @@
 .step:not(.process).active .next {
   pointer-events: auto;
 }
-.step.active .next:hover {
+.step:not(.process).active .next:hover {
   padding-left: 80px;
   color: #3fbe46;
 }
@@ -64,4 +64,23 @@
   opacity: 1;
   left: 50%;
   transform: translateX(-50%);
+}
+.step.active .next .back {
+  opacity: 0;
+  transition: all 0.5s;
+  margin-top: 3px;
+  position: absolute;
+}
+.paused .step.active .next .back {
+  opacity: 1;
+  pointer-events: auto;
+  cursor: pointer;
+  right: 55px;
+  z-index: 11;
+  width: 100%;
+  height: 70px;
+}
+.paused .step.active .next .back:hover {
+  color: #3fbe46;
+  right: 70px;
 }

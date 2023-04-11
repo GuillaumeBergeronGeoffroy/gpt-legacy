@@ -27,25 +27,6 @@
   // if current step is set in local storage overwrite
 
   window.addEventListener("load", () => {
-    if (current_step == 0) {
-      registerLoader();
-      getFileListFromLocalStorage();
-      initializeFileItemsFromFilesData();
-      console.log("current step is loader");
-      console.log(files_data);
-    } else if (current_step == 1) {
-      console.log("current step is processor");
-      console.log(files_data);
-      registerProcessor();
-      getProcessorStepsFromLocalStorage();
-    } else if (current_step == 2) {
-    }
-    registerProgressBar();
-    setActiveStep(current_step);
-    registerSettings();
-    getApiKeyFromLocalStorage();
-    if (current_step == 1) {
-      toggleProcess();
-    }
+    setActiveStep(current_step, true);
   });
 </script>

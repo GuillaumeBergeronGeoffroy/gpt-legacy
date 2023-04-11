@@ -1,8 +1,9 @@
 let files_data = {};
 let file_id = 0;
+let loaderNode = null;
 
 const addCodeTemplate = /*html*/ `
-    <div id="add-code-template">
+    <div id="add-code-template" class='steps-template'>
         <h1>Add Codebase</h1>
         <p class="small text-muted">
         * Add -> Process -> Prompt -> Apply or Discard changes -> Iterate.
@@ -23,7 +24,12 @@ const addCodeTemplate = /*html*/ `
 
 function registerLoader() {
   //  create element with addCodeTemplate and append it to body
-  addTemplate("add-code-template", addCodeTemplate);
+  loaderNode = addTemplate(
+    "add-code-template",
+    addCodeTemplate,
+    "body",
+    "prepend"
+  );
 
   document.getElementById("fileInput").addEventListener("change", (event) => {
     const files = event.target.files;

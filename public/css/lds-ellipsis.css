@@ -33,11 +33,11 @@
   left: 56px;
   animation: lds-ellipsis3 0.6s infinite;
 }
-.lds-ellipsis.paused div {
+.paused .lds-ellipsis div {
   animation-play-state: paused;
 }
 /* pause animation when class is set  */
-.lds-ellipsis.error div {
+.error .lds-ellipsis div {
   background: #c30707;
 }
 @keyframes lds-ellipsis1 {

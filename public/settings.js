@@ -1,4 +1,4 @@
-let settingsObject = null;
+let settingsNode = null;
 let apiKey = null;
 
 const settingsTemplate =
@@ -8,10 +8,10 @@ const settingsTemplate =
     </div>`;
 
 function registerSettings() {
-  settingsObject = addTemplate("settings-template", settingsTemplate);
-  settingsTargetElem = settingsObject.node.querySelector("#settings-template");
-  let settingsImg = settingsObject.node.querySelector(".settings-img");
-  let apiKeyInput = settingsObject.node.querySelector("#api-key");
+  settingsNode = addTemplate("settings-template", settingsTemplate);
+  settingsTargetElem = settingsNode.querySelector("#settings-template");
+  let settingsImg = settingsNode.querySelector(".settings-img");
+  let apiKeyInput = settingsNode.querySelector("#api-key");
   // rewrite this to use domManager
   settingsImg.addEventListener("click", () => {
     if (settingsImg.src.includes("img/gear.png")) {

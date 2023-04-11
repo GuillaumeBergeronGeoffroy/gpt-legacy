@@ -20,13 +20,23 @@ function searchDomTree(id, currentDomTree = null) {
   });
 }
 
-function addTemplate(templateName, template, appendElementTo = "body") {
+function addTemplate(
+  templateName,
+  template,
+  appendElementTo = "body",
+  appendOrPrepend = "append"
+) {
   // add to dom
   id++;
   const templateElement = document.createElement("div");
   templateElement.innerHTML = template;
   templateElement.id = id;
-  document.querySelector(appendElementTo).appendChild(templateElement);
+  // prepend or append to body
+  if (appendOrPrepend === "append") {
+    document.querySelector(appendElementTo).appendChild(templateElement);
+  } else {
+    document.querySelector(appendElementTo).prepend(templateElement);
+  }
   // add to domTree object (for future reinitialization of dom based on domTree)
   let parent = searchDomTree(appendElementTo);
 
@@ -39,5 +49,5 @@ function addTemplate(templateName, template, appendElementTo = "body") {
   };
   parent.childNodes.push(node);
 
-  return node;
+  return templateElement;
 }

@@ -1,11 +1,12 @@
 // each step contains status / progress / data / logs
+let processorNode = null;
 let processor_steps = {};
 // running / paused state
 let processor_state = 1;
 let pauseProcessNode = null;
 
 const processCodeTemplate = /*html*/ `
-    <div id="process-code-template">
+    <div id="process-code-template" class='steps-template'>
         <h1>Process Codebase <img id="pause-process-img" src="img/pause.svg" onclick='toggleProcess()' /></h1>
         <div id="process-instruction">
             <p>Follow the progress of the codebase processor.</p>
@@ -18,8 +19,13 @@ const processCodeTemplate = /*html*/ `
 
 function registerProcessor() {
   //  create element with addCodeTemplate and append it to body
-  addTemplate("process-code-template", processCodeTemplate);
-  pauseProcessNode = document.getElementById("pause-process-img");
+  processorNode = addTemplate(
+    "process-code-template",
+    processCodeTemplate,
+    "body",
+    "prepend"
+  );
+  pauseProcessNode = processorNode.querySelector("#pause-process-img");
 }
 
 function getProcessorStepsFromLocalStorage() {
