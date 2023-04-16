@@ -66,23 +66,21 @@ function setActiveStep(step_index, init = false) {
   }
   if (current_step == 0) {
     registerLoader();
-    initializeFileItemsFromFilesData();
-    console.log(files_data);
   } else if (current_step == 1) {
-    console.log(files_data);
     registerProcessor();
-    processCode();
   } else if (current_step == 2) {
   }
   if (init) {
+    console.log(files_data);
     registerProgressBar();
     registerSettings();
     if (current_step == 1) {
-      pauseProcess();
+      pauseProcess(null, true);
     }
   } else {
     if (current_step == 1) {
       unpauseProcess();
+      processCode();
     }
   }
   progressBarNode.querySelectorAll(".step").forEach((step, i) => {

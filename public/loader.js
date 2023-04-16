@@ -14,8 +14,8 @@ const addCodeTemplate = /*html*/ `
             <p>Add your codebase files.</p>
             <p class="small text-muted">* You can select multiple files at once.</p>
             <p class="small text-muted">
-                * You can do multiple selections (to target different folders and
-                sub-folders).
+                * You can do multiple selections to target different folders and
+                sub-folders.
             </p>
         </div>
         <button class="btn btn-primary mt-3" onclick="document.getElementById('fileInput').click()">Add Files</button>
@@ -31,7 +31,6 @@ function registerLoader() {
     "body",
     "prepend"
   );
-
   document.getElementById("fileInput").addEventListener("change", (event) => {
     const files = event.target.files;
 
@@ -49,6 +48,7 @@ function registerLoader() {
           name: file.name,
           fileExtension: fileExtension,
           fileContent: fileContent,
+          status: "pending",
         };
 
         addFileItemToDOM(files_data[file_id]);
@@ -58,6 +58,7 @@ function registerLoader() {
       reader.readAsText(file);
     }
   });
+  initializeFileItemsFromFilesData();
 }
 
 function initializeFileItemsFromFilesData() {
