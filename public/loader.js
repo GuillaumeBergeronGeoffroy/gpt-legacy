@@ -46,8 +46,8 @@ function registerLoader() {
         files_data[file_id] = {
           id: file_id,
           name: file.name,
-          fileExtension: fileExtension,
-          fileContent: fileContent,
+          extension: fileExtension,
+          content: fileContent,
           status: "pending",
         };
 
@@ -72,7 +72,7 @@ function initializeFileItemsFromFilesData() {
 
 function addFileItemToDOM(file) {
   const listItem = document.createElement("li");
-  listItem.innerHTML = `Title: ${file.name} - Extension: ${file.fileExtension}`;
+  listItem.innerHTML = `Title: ${file.name} - Extension: ${file.extension}`;
   files_data_changed = true;
   listItem.onclick = () => {
     // remove dom element and remove from files_data

@@ -29,6 +29,10 @@ function registerSettings() {
     apiKey = e.target.value;
     setApiKeyToLocalStorage();
   });
+  if (apiKey) {
+    let apiKeyInput = settingsNode.querySelector("#api-key");
+    apiKeyInput.value = apiKey;
+  }
 }
 
 function setApiKeyToLocalStorage() {
@@ -42,10 +46,6 @@ function setApiKeyToLocalStorage() {
 function getApiKeyFromLocalStorage() {
   try {
     apiKey = localStorage.getItem("apiKey");
-    if (apiKey) {
-      let apiKeyInput = settingsObject.node.querySelector("#api-key");
-      apiKeyInput.value = apiKey;
-    }
   } catch (e) {
     console.log(e);
   }

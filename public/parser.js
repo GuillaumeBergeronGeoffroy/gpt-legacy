@@ -1,129 +1,124 @@
-function getTokenSize(text) {
-  const tokenPattern = /[\p{L}\p{N}]+|[\p{P}\p{S}]/gu;
-  const tokens = text.match(tokenPattern) || [];
-  return tokens.length;
-}
+function splitFileString(str, n) {
+  const len = str.length;
+  const size = Math.ceil(len / n);
+  const parts = [];
 
-function getFileLanguage(extension) {
-  const languageByExtension = {
-    py: "python",
-    yml: "yaml",
-    js: "javascript",
-    json: "json",
-    java: "java",
-    c: "c",
-    cpp: "cpp",
-    cs: "csharp",
-    php: "php",
-    rb: "ruby",
-    swift: "swift",
-    go: "go",
-    rs: "rust",
-    kt: "kotlin",
-    ts: "typescript",
-    sc: "scala",
-    pl: "perl",
-    sh: "shell",
-    lua: "lua",
-    m: "matlab",
-    r: "r",
-    jl: "julia",
-    ps1: "powershell",
-    groovy: "groovy",
-    dart: "dart",
-    fs: "fsharp",
-    html: "html",
-    xml: "xml",
-    css: "css",
-  };
-
-  return languageByExtension[extension.toLowerCase()] || null;
-}
-
-const codeSplitRegex = {
-  python: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  yaml: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  javascript: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  json: /(?:\r\n|\r|\n)/g,
-  java: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  c: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  cpp: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  csharp: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  php: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  ruby: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  swift: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  go: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  rust: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  kotlin: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  typescript: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  scala: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  perl: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  shell: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  lua: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  matlab: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  r: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  julia: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  powershell: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  groovy: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  dart: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  fsharp: /(?<!['"`])(?:\r\n|\r|\n)(?!['"`])/g,
-  html: /(?<!['"`])\s*(?:\r\n|\r|\n)\s*(?!['"`])/g,
-  xml: /(?:\r\n|\r|\n)/g,
-  css: /(?:\r\n|\r|\n)/g,
-};
-
-function getGroupCodeBlocksFunction(language) {
-  const groupFunctions = {
-    python: groupPythonCodeBlocks,
-    yaml: groupYamlCodeBlocks,
-    javascript: groupCodeBlocksUsingCurlyBraces,
-    json: groupCodeBlocksUsingCurlyBraces,
-    java: groupCodeBlocksUsingCurlyBraces,
-    c: groupCodeBlocksUsingCurlyBraces,
-    cpp: groupCodeBlocksUsingCurlyBraces,
-    csharp: groupCodeBlocksUsingCurlyBraces,
-    php: groupCodeBlocksUsingCurlyBraces,
-    ruby: groupRubyCodeBlocks,
-    swift: groupCodeBlocksUsingCurlyBraces,
-    go: groupCodeBlocksUsingCurlyBraces,
-    rust: groupCodeBlocksUsingCurlyBraces,
-    kotlin: groupCodeBlocksUsingCurlyBraces,
-    typescript: groupCodeBlocksUsingCurlyBraces,
-    scala: groupCodeBlocksUsingCurlyBraces,
-    perl: groupPerlCodeBlocks,
-    shell: groupShellCodeBlocks,
-    lua: groupLuaCodeBlocks,
-    matlab: groupMatlabCodeBlocks,
-    r: groupRCodeBlocks,
-    julia: groupJuliaCodeBlocks,
-    powershell: groupCodeBlocksUsingCurlyBraces,
-    groovy: groupCodeBlocksUsingCurlyBraces,
-    dart: groupCodeBlocksUsingCurlyBraces,
-    fsharp: groupCodeBlocksUsingCurlyBraces,
-    html: groupHtmlCodeBlocks,
-    xml: groupXmlCodeBlocks,
-    css: groupCodeBlocksUsingCurlyBraces,
-  };
-
-  return groupFunctions[language] ?? null;
-}
-
-function parseFile(file_content, file_extension) {
-  const language = getFileLanguage(file_extension);
-  if (!language) {
-    throw new Error(`Unsupported file extension: ${file_extension}`);
+  for (let i = 0; i < len; i += size) {
+    parts.push(str.substring(i, i + size));
   }
 
-  return getGroupCodeBlocksFunction(language)(
-    file_content.split(codeSplitRegex[language])
+  return parts;
+}
+
+async function parseFile(file_id, file_content, language) {
+  const max_token = 1500;
+  const length = getTokenSize(file_content);
+  const number_of_parts = Math.ceil(length / max_token);
+  const file_parts = splitFileString(file_content, number_of_parts);
+  let n = 0;
+  for (const file_part of file_parts) {
+    n++;
+    addProcessorLog(
+      "info",
+      `Sending parse request ${n}/${number_of_parts} with tokens ${Math.min(
+        n * max_token,
+        length
+      )}/${length}.`
+    );
+    await parseFilePart(file_id, getParsePrompt(file_part, language));
+  }
+}
+
+function getParsePrompt(promptContent, language) {
+  return (
+    "Given the following string of " +
+    language +
+    " code : \n\n" +
+    promptContent +
+    '\n\n Split it into smaller strings representing distinct functional groups, separate each group by "[BLOCK]" and end response by "[BLOCK]":'
   );
+}
+
+async function parseFilePart(file_id, prompt) {
+  try {
+    const response = await fetch(
+      "https://api.openai.com/v1/engines/text-davinci-003/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          prompt: prompt,
+          n: 1,
+          temperature: 0,
+          max_tokens: 2000,
+          stop: "aaaaaaaaaaaaaaaaaaaaaaabaaaaaaaa.aaaaaaa",
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (data.error) {
+      throw new Error(`${data.error.message}`);
+    }
+
+    let splitted_blocks = data.choices[0].text.split("[BLOCK]");
+    if (!splitted_blocks.length) {
+      throw new Error("No functional groups returned");
+    }
+
+    splitted_blocks.map((text) => {
+      handleParseResponse(file_id, text);
+    });
+  } catch (error) {
+    console.log(error);
+    pauseProcess(error);
+  }
+}
+
+function handleParseResponse(file_id, text) {
+  if (text.trim() !== "") {
+    let parsed_file_id = Object.keys(
+      processor_steps.parse.parsed_files[file_id]
+    ).length;
+    processor_steps.parse.parsed_files[file_id][
+      file_id + "_" + parsed_file_id
+    ] = text;
+    addProcessorLog(
+      "info",
+      `Parsed file #${file_id} (${
+        files_data[file_id].name
+      }) to functional group #${parsed_file_id} with token size (${getTokenSize(
+        text
+      )})`
+    );
+  }
 }
 
 function getFilesToParse() {
   // iterate over files_data for which the key is not in the parsed_files object the parsed object : { file_id : {} }
-  // get all files_data not in or status = "pending"
+  // get all files_data not in parsed_files or status = "pending"
   const files_to_parse = Object.keys(files_data).filter((file_id) => {
-    return true;
+    if (
+      !processor_steps.parse.parsed_files[file_id] ||
+      !Object.values(processor_steps.parse.parsed_files[file_id]).length ||
+      files_data[file_id].status == "pending"
+    ) {
+      addProcessorLog(
+        "info",
+        `Adding file #${file_id} (${files_data[file_id].name}) to parsing queue`
+      );
+      return true;
+    }
+
+    addProcessorLog(
+      "info",
+      `File #${file_id} (${files_data[file_id].name}) has already parsed`
+    );
+    return false;
   });
 
   // remove all files from parsed_files object that are not in files_data
@@ -136,30 +131,23 @@ function getFilesToParse() {
   return files_to_parse;
 }
 
-function parseFiles() {
-  const files_to_parse = getFilesToParse();
+async function parseFiles() {
+  const filesToParse = getFilesToParse();
 
-  files_to_parse.forEach((file_id) => {
+  for (const file_id of filesToParse) {
     const file = files_data[file_id];
-    let parsed_file_id = 0;
-
-    let parsed_file_content = parseFile(
-      file.fileContent,
-      file.fileExtension
-    ).reduce((acc, curr) => {
-      if (curr.trim() !== "") {
-        console.log(getTokenSize(curr), curr);
-        acc[file_id + "_" + parsed_file_id] = curr;
-        parsed_file_id++;
-      }
-      return acc;
-    }, {});
-
-    processor_steps.parse.parsed_files[file_id] = parsed_file_content;
+    addProcessorLog(
+      "info",
+      `Parsing file #${file_id} (${files_data[file_id].name})`
+    );
+    processor_steps.parse.parsed_files[file_id] = {};
+    await parseFile(file_id, file.content, getFileLanguage(file.extension));
     file.status = "complete";
+    setFileListToLocalStorage();
     evalProcessPause();
-  });
+  }
 
   processor_steps.parse.status = "complete";
-  processCode("abstract");
+  processorStep = "abstract";
+  processCode();
 }

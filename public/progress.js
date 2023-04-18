@@ -80,7 +80,6 @@ function setActiveStep(step_index, init = false) {
   } else {
     if (current_step == 1) {
       unpauseProcess();
-      processCode();
     }
   }
   progressBarNode.querySelectorAll(".step").forEach((step, i) => {

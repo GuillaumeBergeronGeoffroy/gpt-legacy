@@ -3,6 +3,7 @@ let processorNode = null;
 let pauseProcessNode = null;
 let logsListNode = null;
 let processor_beforeunload_event_listener = null;
+let processorStep = "parse";
 let processor_steps = {
   // parse the files
   parse: {
@@ -112,7 +113,10 @@ function pauseProcess(error = null, init = false) {
   pauseProcessNode.classList.add("paused");
   error && pauseProcessNode.classList.add("error");
   pauseLoaderProcessAnimation(error);
-  !init && addProcessorLog(error ? error : "info", "Process paused");
+  !init &&
+    (error
+      ? addProcessorLog("error", error)
+      : addProcessorLog("info", "Pausing"));
 }
 
 function unpauseProcess() {
@@ -122,20 +126,23 @@ function unpauseProcess() {
   unpauseLoaderProcessAnimation();
   addProcessorLog(
     "info",
-    !processor_steps.logs.length ? "Process started" : "Process resumed"
+    !processor_steps.logs.length ? "Starting" : "Resuming"
   );
+  processCode();
 }
 
 function evalProcessPause() {
   if (processor_state === 0) {
-    throw new Error("Pausing process");
+    throw new Error("Pausing");
   }
 }
 
 function addProcessorLog(type, message) {
   const log = {
     type: type,
-    message: `<span class='log-t'>${new Date().toLocaleString()}</span> - <span class='log-m'>${message}</span>`,
+    message: `<span class='log-m'>${message}</span><span class='log-t'>${formatDate(
+      new Date()
+    )}</span>`,
   };
   processor_steps.logs.push(log);
   setProcessorStepsToLocalStorage();
@@ -162,12 +169,12 @@ function initializeProcessorLogsFromProcessorSteps() {
   });
 }
 
-function processCode(step = "parse") {
+async function processCode() {
   try {
     evalProcessPause();
     // if files_data_changed is true, then we need to evaluate which files are new
     if (files_data_changed) {
-      step = "parse";
+      processorStep = "parse";
       files_data_changed = false;
       // processor_steps.get_parsers.status
       // foreach processor_steps set status to pending
@@ -175,10 +182,9 @@ function processCode(step = "parse") {
         step.status = "pending";
       });
     }
-
-    switch (step) {
+    switch (processorStep) {
       case "parse":
-        parseFiles();
+        await parseFiles();
         break;
       case "abstract":
         abstractFiles();
@@ -191,12 +197,13 @@ function processCode(step = "parse") {
   } catch (e) {
     if (processor_state !== 0) {
       console.log(e);
-      pauseProcess(true);
+      pauseProcess(e);
     }
   }
 }
 
 function abstractFiles() {
+  console.log("abstract");
   pauseProcess();
 }
 
