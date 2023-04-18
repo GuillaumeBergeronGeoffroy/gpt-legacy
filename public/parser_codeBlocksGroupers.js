@@ -42,6 +42,30 @@ function groupCodeBlocksUsingCurlyBraces(splitCode) {
   return groupedBlocks;
 }
 
+function groupJavascriptCodeBlocks(splitCode) {
+  const blockPattern =
+    /^(function\s+[\w_$]+\s*\(|\w+\s*=\s*function\s*\(|\w+\s*=\s*\(\s*\)\s*=>\s*{|\w+\s*=\s*{|\w+\s*:\s*function\s*\(|\w+\s*:\s*\(\s*\)\s*=>\s*{|\w+\s*:\s*{)/;
+
+  let codeBlocks = [];
+  let currentBlock = "";
+
+  splitCode.forEach((line) => {
+    if (blockPattern.test(line.trim())) {
+      if (currentBlock) {
+        codeBlocks.push(currentBlock);
+        currentBlock = "";
+      }
+    }
+    currentBlock += line + "\n";
+  });
+
+  if (currentBlock) {
+    codeBlocks.push(currentBlock);
+  }
+
+  return codeBlocks;
+}
+
 function groupPythonCodeBlocks(splitCode) {
   const groupedBlocks = [];
   let currentBlock = [];
@@ -141,19 +165,21 @@ function groupRubyCodeBlocks(splitCode) {
 }
 
 function groupHtmlCodeBlocks(splitCode) {
-  const groupedBlocks = [];
+  let groupedBlocks = [];
   let currentBlock = [];
   let tagStack = [];
 
   const openingTagPattern = /<([a-zA-Z0-9]+)(?=[\s>]|$)/;
   const closingTagPattern = /<\/([a-zA-Z0-9]+)(?=[\s>]|$)/;
+  const selfClosingTagPattern = /^<([a-zA-Z0-9]+)(?=\s|\/>)/;
 
   for (const line of splitCode) {
-    const trimmedLine = line.trim();
+    let trimmedLine = line.trim();
     currentBlock.push(line);
 
-    const openingMatch = trimmedLine.match(openingTagPattern);
-    const closingMatch = trimmedLine.match(closingTagPattern);
+    let openingMatch = trimmedLine.match(openingTagPattern);
+    let closingMatch = trimmedLine.match(closingTagPattern);
+    let selfClosingMatch = trimmedLine.match(selfClosingTagPattern);
 
     if (openingMatch) {
       tagStack.push(openingMatch[1]);
@@ -167,11 +193,15 @@ function groupHtmlCodeBlocks(splitCode) {
       tagStack.pop();
     }
 
-    if (tagStack.length === 0 && currentBlock.length > 0) {
+    if (selfClosingMatch && trimmedLine.endsWith("/>")) {
+      // Do not push or pop the self-closing tag from the tagStack
+    } else if (tagStack.length === 0 && currentBlock.length > 0) {
       groupedBlocks.push(currentBlock.join("\n"));
       currentBlock = [];
     }
   }
+
+  console.log(groupedBlocks);
 
   return groupedBlocks;
 }
