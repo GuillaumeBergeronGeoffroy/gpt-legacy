@@ -8,26 +8,19 @@ let processor_steps = {
   // parse the files
   parse: {
     status: "pending",
-    parsed_files: {
+    parsed_files_blocks: {
       // file_id, parsed_file_id, status
-    },
-  },
-  // parse files
-  parse: {
-    status: "pending",
-    parsed_files: {
-      // parsed_file_id: {file_id, status, content}}
     },
   },
   // use files_parsed to prompt for objects / relationships / class / functions and variables
   // use files_parsed to prompt for
   abstract: {
     status: "pending",
-    parsed_files_data: {
-      // parsed_files_data_id: {files_parsed_id: {status, objects, relationships, class, functions, variables}
+    code_blocks_data: {
+      // code_blocks_data_id: {parsed_files_block_id, status, objects, relationships, class, functions, variables}
     },
   },
-  // use files_parsed_data to build map of objects / relationships / class / functions and variables with pointer to parsed content
+  // use code_blocks_data to build map of objects / relationships / class / functions and variables with pointer to parsed content
   build_maps: {
     status: "pending",
     // object_map: {
@@ -183,12 +176,15 @@ async function processCode() {
       });
     }
     switch (processorStep) {
+      // Parse files into functional groups / code blocks
       case "parse":
-        await parseFiles();
+        await parseFilesIntoBlocks();
         break;
+      // Get natural language description of blocks -> concepts in blocks -> objects/relationships/classes/functions/variables in blocks
       case "abstract":
-        abstractFiles();
+        abstractCodeBlocks();
         break;
+      // Build maps of objects/relationships/classes/functions/variables to code blocks
       case "build_maps":
         buildMaps();
       default:
@@ -200,11 +196,6 @@ async function processCode() {
       pauseProcess(e);
     }
   }
-}
-
-function abstractFiles() {
-  console.log("abstract");
-  pauseProcess();
 }
 
 function buildMaps() {}

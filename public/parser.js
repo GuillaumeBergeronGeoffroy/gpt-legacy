@@ -1,13 +1,56 @@
-function splitFileString(str, n) {
-  const len = str.length;
-  const size = Math.ceil(len / n);
-  const parts = [];
+async function parseFilesIntoBlocks() {
+  const filesToParse = getFilesToParse();
 
-  for (let i = 0; i < len; i += size) {
-    parts.push(str.substring(i, i + size));
+  for (const file_id of filesToParse) {
+    const file = files_data[file_id];
+    addProcessorLog(
+      "info",
+      `Parsing file #${file_id} (${files_data[file_id].name})`
+    );
+    await parseFile(file_id, file.content, getFileLanguage(file.extension));
+    file.status = "complete";
+    setFileListToLocalStorage();
+    evalProcessPause();
   }
 
-  return parts;
+  processor_steps.parse.status = "complete";
+  processorStep = "abstract";
+  processCode();
+}
+
+function getFilesToParse() {
+  // iterate over files_data for which the key is not in the parsed_files_blocks object the parsed object : { file_id : {} }
+  // get all files_data not in parsed_files_blocks or file.status = "pending"
+  const files_to_parse = Object.keys(files_data).filter((file_id) => {
+    if (files_data[file_id].status == "pending") {
+      addProcessorLog(
+        "info",
+        `Adding file #${file_id} (${files_data[file_id].name}) to parsing queue`
+      );
+      return true;
+    }
+
+    addProcessorLog(
+      "info",
+      `File #${file_id} (${files_data[file_id].name}) has already been parsed`
+    );
+    return false;
+  });
+
+  // remove all parsed_blocks from parsed_files_blocks object that are from files no longer in files_data
+  Object.keys(processor_steps.parse.parsed_files_blocks).forEach(
+    (parsed_files_block_id) => {
+      let context_file_id =
+        processor_steps.parse.parsed_files_blocks[parsed_files_block_id][
+          "file_id"
+        ];
+      if (!files_data[context_file_id]) {
+        delete processor_steps.parse.parsed_files_blocks[parsed_files_block_id];
+      }
+    }
+  );
+
+  return files_to_parse;
 }
 
 async function parseFile(file_id, file_content, language) {
@@ -27,6 +70,18 @@ async function parseFile(file_id, file_content, language) {
     );
     await parseFilePart(file_id, getParsePrompt(file_part, language));
   }
+}
+
+function splitFileString(str, n) {
+  const len = str.length;
+  const size = Math.ceil(len / n);
+  const parts = [];
+
+  for (let i = 0; i < len; i += size) {
+    parts.push(str.substring(i, i + size));
+  }
+
+  return parts;
 }
 
 function getParsePrompt(promptContent, language) {
@@ -70,8 +125,8 @@ async function parseFilePart(file_id, prompt) {
       throw new Error("No functional groups returned");
     }
 
-    splitted_blocks.map((text) => {
-      handleParseResponse(file_id, text);
+    splitted_blocks.map((code_block) => {
+      handleParseResponse(file_id, code_block);
     });
   } catch (error) {
     console.log(error);
@@ -79,75 +134,29 @@ async function parseFilePart(file_id, prompt) {
   }
 }
 
-function handleParseResponse(file_id, text) {
-  if (text.trim() !== "") {
-    let parsed_file_id = Object.keys(
-      processor_steps.parse.parsed_files[file_id]
-    ).length;
-    processor_steps.parse.parsed_files[file_id][
-      file_id + "_" + parsed_file_id
-    ] = text;
+function handleParseResponse(file_id, code_block) {
+  if (block.trim() !== "") {
+    let parsed_file_block_id = Math.max(
+      Math.max(
+        ...Object.keys(processor_steps.parse.parsed_files_blocks).map(
+          (key) => key * 1
+        )
+      ),
+      0
+    );
+    parsed_file_block_id++;
+    processor_steps.parse.parsed_files_blocks[parsed_file_block_id] = {
+      file_id: file_id,
+      code: code_block,
+      status: "pending",
+    };
     addProcessorLog(
       "info",
       `Parsed file #${file_id} (${
         files_data[file_id].name
-      }) to functional group #${parsed_file_id} with token size (${getTokenSize(
-        text
+      }) to functional group #${parsed_file_block_id} with token size (${getTokenSize(
+        code_block
       )})`
     );
   }
-}
-
-function getFilesToParse() {
-  // iterate over files_data for which the key is not in the parsed_files object the parsed object : { file_id : {} }
-  // get all files_data not in parsed_files or status = "pending"
-  const files_to_parse = Object.keys(files_data).filter((file_id) => {
-    if (
-      !processor_steps.parse.parsed_files[file_id] ||
-      !Object.values(processor_steps.parse.parsed_files[file_id]).length ||
-      files_data[file_id].status == "pending"
-    ) {
-      addProcessorLog(
-        "info",
-        `Adding file #${file_id} (${files_data[file_id].name}) to parsing queue`
-      );
-      return true;
-    }
-
-    addProcessorLog(
-      "info",
-      `File #${file_id} (${files_data[file_id].name}) has already parsed`
-    );
-    return false;
-  });
-
-  // remove all files from parsed_files object that are not in files_data
-  Object.keys(processor_steps.parse.parsed_files).forEach((file_id) => {
-    if (!files_data[file_id]) {
-      delete processor_steps.parse.parsed_files[file_id];
-    }
-  });
-
-  return files_to_parse;
-}
-
-async function parseFiles() {
-  const filesToParse = getFilesToParse();
-
-  for (const file_id of filesToParse) {
-    const file = files_data[file_id];
-    addProcessorLog(
-      "info",
-      `Parsing file #${file_id} (${files_data[file_id].name})`
-    );
-    processor_steps.parse.parsed_files[file_id] = {};
-    await parseFile(file_id, file.content, getFileLanguage(file.extension));
-    file.status = "complete";
-    setFileListToLocalStorage();
-    evalProcessPause();
-  }
-
-  processor_steps.parse.status = "complete";
-  processorStep = "abstract";
-  processCode();
 }
