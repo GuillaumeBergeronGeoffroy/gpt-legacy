@@ -1,19 +1,15 @@
 async function parseFilesIntoBlocks() {
-  const filesToParse = getFilesToParse();
+  const files_to_parse = getFilesToParse();
+  console.log(files_data);
 
-  for (const file_id of filesToParse) {
+  for (const file_id of files_to_parse) {
+    evalProcessPause();
     const file = files_data[file_id];
-    addProcessorLog(
-      "info",
-      `Parsing file #${file_id} (${files_data[file_id].name})`
-    );
-    await parseFile(file_id, file.content, getFileLanguage(file.extension));
+    await parseFile(file);
     file.status = "complete";
     setFileListToLocalStorage();
-    evalProcessPause();
   }
 
-  processor_steps.parse.status = "complete";
   processorStep = "abstract";
   processCode();
 }
@@ -41,9 +37,8 @@ function getFilesToParse() {
   Object.keys(processor_steps.parse.parsed_files_blocks).forEach(
     (parsed_files_block_id) => {
       let context_file_id =
-        processor_steps.parse.parsed_files_blocks[parsed_files_block_id][
-          "file_id"
-        ];
+        processor_steps.parse.parsed_files_blocks[parsed_files_block_id]
+          .file_id;
       if (!files_data[context_file_id]) {
         delete processor_steps.parse.parsed_files_blocks[parsed_files_block_id];
       }
@@ -53,11 +48,12 @@ function getFilesToParse() {
   return files_to_parse;
 }
 
-async function parseFile(file_id, file_content, language) {
+async function parseFile(file) {
+  addProcessorLog("info", `Parsing file #${file.id} (${file.name})`);
   const max_token = 1500;
-  const length = getTokenSize(file_content);
+  const length = getTokenSize(file.content);
   const number_of_parts = Math.ceil(length / max_token);
-  const file_parts = splitFileString(file_content, number_of_parts);
+  const file_parts = splitFileString(file.content, number_of_parts);
   let n = 0;
   for (const file_part of file_parts) {
     n++;
@@ -68,7 +64,7 @@ async function parseFile(file_id, file_content, language) {
         length
       )}/${length}.`
     );
-    await parseFilePart(file_id, getParsePrompt(file_part, language));
+    await parseFilePart(file, getParsePrompt(file_part, file.language));
   }
 }
 
@@ -88,55 +84,50 @@ function getParsePrompt(promptContent, language) {
   return (
     "Given the following string of " +
     language +
-    " code : \n\n" +
+    " code: \n\n" +
     promptContent +
     '\n\n Split it into smaller strings representing distinct functional groups, separate each group by "[BLOCK]" and end response by "[BLOCK]":'
   );
 }
 
-async function parseFilePart(file_id, prompt) {
-  try {
-    const response = await fetch(
-      "https://api.openai.com/v1/engines/text-davinci-003/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          prompt: prompt,
-          n: 1,
-          temperature: 0,
-          max_tokens: 2000,
-          stop: "aaaaaaaaaaaaaaaaaaaaaaabaaaaaaaa.aaaaaaa",
-        }),
-      }
-    );
-
-    const data = await response.json();
-
-    if (data.error) {
-      throw new Error(`${data.error.message}`);
+async function parseFilePart(file, prompt) {
+  const response = await fetch(
+    "https://api.openai.com/v1/engines/text-davinci-003/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        prompt: prompt,
+        n: 1,
+        temperature: 0,
+        max_tokens: 2000,
+        stop: "aaaaaaaaaaaaaaaaaaaaaaabaaaaaaaa.aaaaaaa",
+      }),
     }
+  );
 
-    let splitted_blocks = data.choices[0].text.split("[BLOCK]");
-    if (!splitted_blocks.length) {
-      throw new Error("No functional groups returned");
-    }
+  const data = await response.json();
 
-    splitted_blocks.map((code_block) => {
-      handleParseResponse(file_id, code_block);
-    });
-  } catch (error) {
-    console.log(error);
-    pauseProcess(error);
+  if (data.error) {
+    throw new Error(`${data.error.message}`);
   }
+
+  let splitted_blocks = data.choices[0].text.split("[BLOCK]");
+  if (!splitted_blocks.length) {
+    throw new Error("No blocks returned");
+  }
+
+  splitted_blocks.map((code_block) => {
+    handleParseResponse(file, code_block);
+  });
 }
 
-function handleParseResponse(file_id, code_block) {
-  if (block.trim() !== "") {
-    let parsed_file_block_id = Math.max(
+function handleParseResponse(file, code_block) {
+  if (code_block.trim() !== "") {
+    let parsed_files_block_id = Math.max(
       Math.max(
         ...Object.keys(processor_steps.parse.parsed_files_blocks).map(
           (key) => key * 1
@@ -144,17 +135,20 @@ function handleParseResponse(file_id, code_block) {
       ),
       0
     );
-    parsed_file_block_id++;
-    processor_steps.parse.parsed_files_blocks[parsed_file_block_id] = {
-      file_id: file_id,
+    parsed_files_block_id++;
+    processor_steps.parse.parsed_files_blocks[parsed_files_block_id] = {
+      file_id: file.id,
+      parsed_files_block_id: parsed_files_block_id,
       code: code_block,
       status: "pending",
+      language: file.language,
+      log_string: `#${parsed_files_block_id} from file #${file.id} (${file.name})`,
     };
     addProcessorLog(
       "info",
-      `Parsed file #${file_id} (${
-        files_data[file_id].name
-      }) to functional group #${parsed_file_block_id} with token size (${getTokenSize(
+      `Parsed file #${file.id} (${
+        files_data[file.id].name
+      }) to code block #${parsed_files_block_id} with token size (${getTokenSize(
         code_block
       )})`
     );

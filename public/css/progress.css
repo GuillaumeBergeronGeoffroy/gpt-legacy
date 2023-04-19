@@ -65,23 +65,36 @@
   left: 50%;
   transform: translateX(-50%);
 }
-.step.active .next .back {
+.step.active .next .back,
+.next .next-prompt {
   opacity: 0;
   transition: all 0.5s;
   margin-top: 3px;
   position: absolute;
-  right: 30px;
-  width: 100%;
+  right: 80px;
+  width: 50%;
   height: 70px;
 }
-.paused .step.active .next .back {
+.next .next-prompt {
+  left: 80px;
+  rotate: 180deg;
+}
+.paused .step.active .next .back,
+.completed .step.active .next .next-prompt {
   opacity: 1;
   pointer-events: auto;
   cursor: pointer;
   z-index: 11;
-  right: 55px;
+  right: 105px;
 }
-.paused .step.active .next .back:hover {
+.completed .step.active .next .next-prompt {
+  left: 105px;
+}
+.completed .step.active .next .back:hover {
   color: #3fbe46;
-  right: 80px;
+  right: 130px;
+}
+.completed .step.active .next .next-prompt:hover {
+  color: #3fbe46;
+  left: 130px;
 }

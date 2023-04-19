@@ -7,25 +7,32 @@ let processorStep = "parse";
 let processor_steps = {
   // parse the files
   parse: {
-    status: "pending",
     parsed_files_blocks: {
-      // file_id, parsed_file_id, status
+      // parsed_files_block_id: {
+      //    file_id: file.id,
+      //    parsed_files_block_id: parsed_files_block_id,
+      //    code: code_block,
+      //    status: "pending" / "abstract" / "complete",
+      //    language: file.language,
+      //    log_string: `#${parsed_files_block_id} from file #${file.id} (${file.name})`,
+      //    abstract_description: {},
+      //    abstract_concepts : {}
+      //    abstract_objects : {}
+      // }
     },
   },
-  // use files_parsed to prompt for objects / relationships / class / functions and variables
-  // use files_parsed to prompt for
-  abstract: {
-    status: "pending",
-    code_blocks_data: {
-      // code_blocks_data_id: {parsed_files_block_id, status, objects, relationships, class, functions, variables}
-    },
-  },
-  // use code_blocks_data to build map of objects / relationships / class / functions and variables with pointer to parsed content
+  // Get natural language description of blocks -> concepts in blocks -> objects/classes/functions/variables in blocks
+  abstract: {},
+  // use parsed_files_blocks abstract_data to build map of objects / relationships / class / functions and variables with pointer to parsed content
   build_maps: {
-    status: "pending",
-    // object_map: {
-    //  name: array of files_parsed_id that have this object
-    // }
+    // on input for changes query gpt to extract concept present in input text / then use concept map partial match on keys to extract all pertinent codeblocks description / batch the codeblocks description // I have these code blocks in my codebase that seem to interact with the concepts in the request with id // Do you think we need a separate codeblock for this concept and which of these codeblocks should be reviewed for possible changes given the new concept
+    // Send ids of codeblocks to be reviewed and any distinct functional code blocks that should be created
+    concepts: {
+      // concepts: [parsed_files_block_id]
+    },
+    objects: {
+      // name: [parsed_files_block_id]
+    },
   },
   logs: [
     // {type: "info", message: "message"},
@@ -44,6 +51,9 @@ const processCodeTemplate = /*html*/ `
             <p>Follow the progress of the codebase processor.</p>
             <p class="small text-muted">
                 * You can pause the process using the pause button above.
+            </p>
+            <p class="small text-muted">
+                * In the works is a toggleable view that will display the codebase files in their parsed & abstract form.
             </p>
         </div>
         <ul id="logsList"></ul>
@@ -101,11 +111,20 @@ function toggleProcess() {
   }
 }
 
+function endProcess(init = false) {
+  processorStep = "complete";
+  processor_state = 0;
+  pauseProcessNode.classList.add("ended");
+  pauseProcessNode.classList.add("paused");
+  pauseLoaderProcessAnimation(true);
+  !init && addProcessorLog("info", "Process Completed", { completed: true });
+}
+
 function pauseProcess(error = null, init = false) {
   processor_state = 0;
   pauseProcessNode.classList.add("paused");
   error && pauseProcessNode.classList.add("error");
-  pauseLoaderProcessAnimation(error);
+  pauseLoaderProcessAnimation();
   !init &&
     (error
       ? addProcessorLog("error", error)
@@ -130,12 +149,13 @@ function evalProcessPause() {
   }
 }
 
-function addProcessorLog(type, message) {
+function addProcessorLog(type, message, extra_data = {}) {
   const log = {
     type: type,
     message: `<span class='log-m'>${message}</span><span class='log-t'>${formatDate(
       new Date()
     )}</span>`,
+    ...extra_data,
   };
   processor_steps.logs.push(log);
   setProcessorStepsToLocalStorage();
@@ -169,11 +189,6 @@ async function processCode() {
     if (files_data_changed) {
       processorStep = "parse";
       files_data_changed = false;
-      // processor_steps.get_parsers.status
-      // foreach processor_steps set status to pending
-      Object.values(processor_steps).forEach((step) => {
-        step.status = "pending";
-      });
     }
     switch (processorStep) {
       // Parse files into functional groups / code blocks
@@ -187,6 +202,9 @@ async function processCode() {
       // Build maps of objects/relationships/classes/functions/variables to code blocks
       case "build_maps":
         buildMaps();
+        break;
+      case "complete":
+        endProcess();
       default:
         break;
     }
@@ -197,5 +215,3 @@ async function processCode() {
     }
   }
 }
-
-function buildMaps() {}

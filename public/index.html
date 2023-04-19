@@ -20,6 +20,7 @@
     <script src="processor.js"></script>
     <script src="parser.js"></script>
     <script src="abstractor.js"></script>
+    <script src="mapper.js"></script>
     <script src="progress.js"></script>
     <script src="settings.js"></script>
   </body>
@@ -27,7 +28,6 @@
 
 <script>
   let current_step = getStepFromLocalStorage();
-  // if current step is set in local storage overwrite
 
   window.addEventListener("load", () => {
     setActiveStep(current_step, true);

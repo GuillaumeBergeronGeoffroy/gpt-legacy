@@ -22,6 +22,7 @@ const progressBarTemplate =
                 <div></div>
                 <div></div>
               </div>
+              <span class='next-prompt' onclick='setActiveStep(2)'>←</span>
             </span>
         </div>
         <div class="step">Prompt</div>
@@ -75,7 +76,19 @@ function setActiveStep(step_index, init = false) {
     registerProgressBar();
     registerSettings();
     if (current_step == 1) {
-      pauseProcess(null, true);
+      // if the last processor_steps_logs is = 'Process completed' then call endProcess()
+      console.log(
+        processor_steps.logs,
+        processor_steps.logs[processor_steps.logs.length - 1]
+      );
+      if (
+        processor_steps.logs.length &&
+        processor_steps.logs[processor_steps.logs.length - 1].completed
+      ) {
+        endProcess(true);
+      } else {
+        pauseProcess(null, true);
+      }
     }
   } else {
     if (current_step == 1) {
@@ -89,11 +102,13 @@ function setActiveStep(step_index, init = false) {
   setStepToLocalStorage(current_step);
 }
 
-function pauseLoaderProcessAnimation(error = false) {
+function pauseLoaderProcessAnimation(completed = false) {
   progressBarNode.classList.add("paused");
+  completed && progressBarNode.classList.add("completed");
 }
 
 function unpauseLoaderProcessAnimation() {
   progressBarNode.classList.remove("error");
   progressBarNode.classList.remove("paused");
+  progressBarNode.classList.remove("completed");
 }

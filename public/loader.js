@@ -49,6 +49,7 @@ function registerLoader() {
           extension: fileExtension,
           content: fileContent,
           status: "pending",
+          language: getFileLanguage(fileExtension),
         };
 
         addFileItemToDOM(files_data[file_id]);
