@@ -27,6 +27,7 @@ let processor_steps = {
   build_maps: {
     // on input for changes query gpt to extract concept present in input text / then use concept map partial match on keys to extract all pertinent codeblocks description / batch the codeblocks description // I have these code blocks in my codebase that seem to interact with the concepts in the request with id // Do you think we need a separate codeblock for this concept and which of these codeblocks should be reviewed for possible changes given the new concept
     // Send ids of codeblocks to be reviewed and any distinct functional code blocks that should be created
+    // if its a novel concept -> pass the concept array to check with the prompt concept array? / create new code block
     concepts: {
       // concepts: [parsed_files_block_id]
     },
@@ -52,9 +53,9 @@ const processCodeTemplate = /*html*/ `
             <p class="small text-muted">
                 * You can pause the process using the pause button above.
             </p>
-            <p class="small text-muted">
-                * In the works is a toggleable view that will display the codebase files in their parsed & abstract form.
-            </p>
+            <!-- <p class="small text-muted"> -->
+              <!-- * In the works is a toggleable view that will display the codebase files in their parsed & abstract form. -->
+            <!-- </p> -->
         </div>
         <ul id="logsList"></ul>
     </div>`;
@@ -117,7 +118,7 @@ function endProcess(init = false) {
   pauseProcessNode.classList.add("ended");
   pauseProcessNode.classList.add("paused");
   pauseLoaderProcessAnimation(true);
-  !init && addProcessorLog("info", "Process Completed", { completed: true });
+  !init && addProcessorLog("info", "Process complete", { completed: true });
 }
 
 function pauseProcess(error = null, init = false) {

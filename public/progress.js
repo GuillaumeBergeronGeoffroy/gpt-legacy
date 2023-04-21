@@ -12,7 +12,7 @@ const progressBarTemplate =
                 →
             </span>
         </div>
-        <div class="step process">
+        <div class="step step-process">
             Process
             <span class='next'>
               <span class='back' onclick='setActiveStep(0)'>←</span>
@@ -25,7 +25,11 @@ const progressBarTemplate =
               <span class='next-prompt' onclick='setActiveStep(2)'>←</span>
             </span>
         </div>
-        <div class="step">Prompt</div>
+        <div class="step step-prompt">Prompt
+          <span class='next' onclick='setActiveStep(0)'>
+            →
+          </span>
+        </div>
     </div>`;
 
 function registerProgressBar() {
@@ -70,17 +74,13 @@ function setActiveStep(step_index, init = false) {
   } else if (current_step == 1) {
     registerProcessor();
   } else if (current_step == 2) {
+    registerPrompt();
   }
   if (init) {
     console.log(files_data);
     registerProgressBar();
     registerSettings();
     if (current_step == 1) {
-      // if the last processor_steps_logs is = 'Process completed' then call endProcess()
-      console.log(
-        processor_steps.logs,
-        processor_steps.logs[processor_steps.logs.length - 1]
-      );
       if (
         processor_steps.logs.length &&
         processor_steps.logs[processor_steps.logs.length - 1].completed

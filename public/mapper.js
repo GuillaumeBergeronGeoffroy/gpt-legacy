@@ -11,13 +11,17 @@ function buildMaps() {
         );
         Object.keys(maps).forEach((map_key) => {
           code_block[`abstract_${map_key}`] &&
-            code_block[`abstract_${map_key}`].trim().length &&
-            code_block[`abstract_${map_key}`].split(",").forEach((word) => {
-              if (!maps[map_key][word]) {
-                maps[map_key][word] = [];
-              }
-              maps[map_key][word].push(parsed_files_block_id);
-            });
+            code_block[`abstract_${map_key}`].value.trim().length &&
+            code_block[`abstract_${map_key}`].value
+              .split(",")
+              .forEach((word) => {
+                // remove all \n in string
+                word = word.replace(/(\r\n|\n|\r)/gm, "").trim();
+                if (!maps[map_key][word]) {
+                  maps[map_key][word] = [];
+                }
+                maps[map_key][word].push(parsed_files_block_id);
+              });
         });
         code_block.status = "complete";
       }

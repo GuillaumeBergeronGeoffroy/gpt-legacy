@@ -87,7 +87,12 @@ async function abstract(code_block, type) {
     throw new Error(`No ${type} returned`);
   }
 
-  addAbstractValue(code_block, data.choices[0].text, type);
+  addAbstractValue(
+    code_block,
+    data.choices[0].text,
+    data.usage.completion_tokens,
+    type
+  );
 }
 
 function getAbstractPrompt(code_block, language, type) {
@@ -102,25 +107,27 @@ function getAbstractPrompt(code_block, language, type) {
       );
     case "concepts":
       return (
-        "Given the following string of " +
-        language +
-        " code in which " +
         code_block.abstract_description +
-        "\n\n Provide a list of comma separated abstract concepts about its purpose:"
+        "\n\n" +
+        code_block +
+        "\n\n Provide a single string of comma separated abstract concepts about its purpose:"
+        // Provide a single string of comma separated verb and predicate about the different purposes of this piece of code:
       );
     case "objects":
       return (
-        "Given the following string of " +
-        language +
-        " code in which " +
         code_block.abstract_description +
-        "\n\n Provide a list of comma separated code classes, objects, functions, variables and all identifiable code element used in the code:"
+        "\n\n" +
+        code_block +
+        "\n\n Provide a single of comma separated string of the objects class name, functions name, variables name and other codebase specific elements present in this code block:"
       );
     default:
       throw new Error("Invalid type");
   }
 }
 
-function addAbstractValue(code_block, value, type) {
-  code_block["abstract_" + type] = value;
+function addAbstractValue(code_block, value, responseTokenLength, type) {
+  code_block["abstract_" + type] = {
+    value: value,
+    length: responseTokenLength,
+  };
 }

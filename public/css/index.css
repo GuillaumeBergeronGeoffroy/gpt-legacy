@@ -3,6 +3,9 @@
   /* padding:0; */
   position: relative;
 }
+*:focus {
+  outline: none;
+}
 body {
   margin: 0;
   padding: 0;
@@ -10,6 +13,12 @@ body {
   background: #000000;
   color: #fff;
   padding: 20px;
+}
+.steps-template {
+  margin: auto;
+  max-width: 500px;
+  transition: all 0.5s;
+  opacity: 1;
 }
 ul {
   list-style: none;

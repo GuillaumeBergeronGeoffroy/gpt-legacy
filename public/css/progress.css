@@ -45,10 +45,10 @@
 .step.active .next {
   opacity: 1;
 }
-.step:not(.process).active .next {
+.step:not(.step-process).active .next {
   pointer-events: auto;
 }
-.step:not(.process).active .next:hover {
+.step:not(.step-process).active .next:hover {
   padding-left: 80px;
   color: #3fbe46;
 }

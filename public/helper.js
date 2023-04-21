@@ -51,3 +51,17 @@ function getFileLanguage(extension) {
 
   return languageByExtension[extension.toLowerCase()] || extension;
 }
+
+function getVisibleText(node) {
+  if (node.nodeType === Node.TEXT_NODE) {
+    return node.textContent;
+  } else if (node.tagName == "BR") {
+    return "\r";
+  }
+  var style = getComputedStyle(node);
+  if (style && style.position === "absolute") return "";
+  var text = "";
+  for (var i = 0; i < node.childNodes.length; i++)
+    text += getVisibleText(node.childNodes[i]);
+  return text;
+}
