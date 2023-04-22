@@ -1,5 +1,6 @@
 async function parseFilesIntoBlocks() {
   const files_to_parse = getFilesToParse();
+  updateProcessorProgress(0, files_to_parse.length);
   console.log(files_data);
 
   for (const file_id of files_to_parse) {
@@ -7,6 +8,7 @@ async function parseFilesIntoBlocks() {
     const file = files_data[file_id];
     await parseFile(file);
     file.status = "complete";
+    updateProcessorProgress(1);
     setFileListToLocalStorage();
   }
 

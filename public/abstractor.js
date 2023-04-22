@@ -1,5 +1,6 @@
 async function abstractCodeBlocks() {
   const code_blocks_to_abstract = getCodeBlocksToAbstract();
+  updateProcessorProgress(0, code_blocks_to_abstract.length * 3);
   console.log(processor_steps.parse.parsed_files_blocks);
 
   for (const parsed_files_block_id of code_blocks_to_abstract) {
@@ -93,6 +94,8 @@ async function abstract(code_block, type) {
     data.usage.completion_tokens,
     type
   );
+
+  updateProcessorProgress(1);
 }
 
 function getAbstractPrompt(code_block, language, type) {

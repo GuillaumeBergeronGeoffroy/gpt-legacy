@@ -4,6 +4,8 @@ let pauseProcessNode = null;
 let logsListNode = null;
 let processor_beforeunload_event_listener = null;
 let processorStep = "parse";
+let processor_total_steps = (processor_current_step = 0);
+let processor_progress_node = null;
 let processor_steps = {
   // parse the files
   parse: {
@@ -56,6 +58,7 @@ const processCodeTemplate = /*html*/ `
             <!-- <p class="small text-muted"> -->
               <!-- * In the works is a toggleable view that will display the codebase files in their parsed & abstract form. -->
             <!-- </p> -->
+            <div id='process-progress-bar'></div>
         </div>
         <ul id="logsList"></ul>
     </div>`;
@@ -69,6 +72,9 @@ function registerProcessor() {
     "prepend"
   );
   pauseProcessNode = processorNode.querySelector("#pause-process-img");
+  processor_progress_node = processorNode.querySelector(
+    "#process-progress-bar"
+  );
   !processor_beforeunload_event_listener && addUnloadEvent();
   initializeProcessorLogsFromProcessorSteps();
 }
@@ -113,6 +119,7 @@ function toggleProcess() {
 }
 
 function endProcess(init = false) {
+  updateProcessorProgress(1, 1);
   processorStep = "complete";
   processor_state = 0;
   pauseProcessNode.classList.add("ended");
@@ -215,4 +222,22 @@ async function processCode() {
       pauseProcess(e);
     }
   }
+}
+
+function updateProcessorProgress(
+  step_increment,
+  initialized_total_steps = null
+) {
+  if (initialized_total_steps) {
+    processor_total_steps = initialized_total_steps;
+    processor_current_step = 0;
+  }
+  processor_current_step += step_increment;
+
+  width =
+    "calc(" +
+    Math.ceil((processor_current_step / processor_total_steps) * 100) +
+    "%)";
+
+  processor_progress_node.style.width = width;
 }

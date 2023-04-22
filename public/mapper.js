@@ -1,5 +1,10 @@
 function buildMaps() {
   const maps = processor_steps.build_maps;
+  updateProcessorProgress(
+    0,
+    Object.keys(processor_steps.parse.parsed_files_blocks).length
+  );
+
   Object.keys(processor_steps.parse.parsed_files_blocks).forEach(
     (parsed_files_block_id) => {
       const code_block =
@@ -24,6 +29,7 @@ function buildMaps() {
               });
         });
         code_block.status = "complete";
+        updateProcessorProgress(1);
       }
     }
   );
