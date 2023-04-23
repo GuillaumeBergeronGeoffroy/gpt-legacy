@@ -52,7 +52,7 @@ function getFilesToParse() {
 
 async function parseFile(file) {
   addProcessorLog("info", `Parsing file #${file.id} (${file.name})`);
-  const max_token = 1750;
+  const max_token = 1875;
   const length = getTokenSize(file.content);
   const number_of_parts = Math.ceil(length / max_token);
   const file_parts = splitFileString(file.content, number_of_parts);

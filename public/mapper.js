@@ -50,6 +50,31 @@ function buildMaps() {
     });
   });
 
+  // filter out all words from maps object that have no parsed_files_block_id
+  Object.keys(maps).forEach((map_key) => {
+    Object.keys(maps[map_key]).forEach((word) => {
+      if (!maps[map_key][word].length) {
+        delete maps[map_key][word];
+      }
+    });
+  });
+
   processorStep = "complete";
   processCode();
+}
+
+function getMapLists(type) {
+  let map_list = [""];
+  let map_list_index = 0;
+  Object.keys(processor_steps.build_maps[type]).forEach((map_key) => {
+    // concat map_key: join array values
+    map_list[map_list_index] += `${map_key}:${processor_steps.build_maps[type][
+      map_key
+    ].join(" ")},`;
+    if (getTokenSize(map_list[map_list_index]) > 250) {
+      map_list_index++;
+      map_list.push("");
+    }
+  });
+  return map_list;
 }
