@@ -22,7 +22,10 @@ function buildMaps() {
               .forEach((word) => {
                 // remove all \n in string
                 word = word.replace(/(\r\n|\n|\r)/gm, "").trim();
-                if (!maps[map_key][word]) {
+                if (
+                  !maps[map_key][word] ||
+                  !Array.isArray(maps[map_key][word])
+                ) {
                   maps[map_key][word] = [];
                 }
                 maps[map_key][word].push(parsed_files_block_id);
