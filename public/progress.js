@@ -72,7 +72,7 @@ function setActiveStep(step_index, init = false) {
   if (current_step == 0) {
     registerLoader();
   } else if (current_step == 1) {
-    registerProcessor();
+    registerProcessor(init);
   } else if (current_step == 2) {
     registerPrompt();
   }

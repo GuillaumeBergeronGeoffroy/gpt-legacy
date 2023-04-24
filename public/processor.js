@@ -63,7 +63,7 @@ const processCodeTemplate = /*html*/ `
         <ul id="logsList"></ul>
     </div>`;
 
-function registerProcessor() {
+function registerProcessor(init = false) {
   //  create element with addCodeTemplate and append it to body
   processorNode = addTemplate(
     "process-code-template",
@@ -76,19 +76,17 @@ function registerProcessor() {
     "#process-progress-bar"
   );
   !processor_beforeunload_event_listener && addUnloadEvent();
-  initializeProcessorLogsFromProcessorSteps();
+  initializeProcessorLogsFromProcessorSteps(init);
 }
 
 function addUnloadEvent() {
-  processor_beforeunload_event_listener = window.addEventListener(
-    "beforeunload",
-    (e) => {
-      if (processor_state === 1) {
-        e.preventDefault(); //per the standard
-        e.returnValue = "";
-      }
+  processor_beforeunload_event_listener = true;
+  window.addEventListener("beforeunload", (e) => {
+    if (processor_state === 1) {
+      e.preventDefault(); //per the standard
+      e.returnValue = "";
     }
-  );
+  });
 }
 
 function getProcessorStepsFromLocalStorage() {
@@ -182,12 +180,15 @@ function scrollToBottomOfLogs() {
   logsListNode.scrollTop = logsListNode.scrollHeight;
 }
 
-function initializeProcessorLogsFromProcessorSteps() {
+function initializeProcessorLogsFromProcessorSteps(init = false) {
   logsListNode = processorNode.querySelector("#logsList");
-  if (processor_steps.logs.length === 0) return;
-  processor_steps.logs.forEach((log) => {
-    addLogToDom(log);
-  });
+  if (!init) {
+    clearProcessorLogs();
+  } else {
+    processor_steps.logs.forEach((log) => {
+      addLogToDom(log);
+    });
+  }
 }
 
 async function processCode() {
@@ -240,4 +241,10 @@ function updateProcessorProgress(
     "%)";
 
   processor_progress_node.style.width = width;
+}
+
+function clearProcessorLogs() {
+  processor_steps.logs = [];
+  setProcessorStepsToLocalStorage();
+  logsListNode.innerHTML = "";
 }
