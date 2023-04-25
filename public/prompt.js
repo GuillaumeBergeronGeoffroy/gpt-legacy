@@ -1,9 +1,21 @@
 let promptNode = null;
 let promptInput = null;
+let prompts = [
+  {
+    // prompt_id: 0,
+    // prompt: "What is the purpose of this code?",
+    // codebase_concepts: '',
+    // codebase_objects: '',
+    // mapped_existing_blocks: [parsed_files_block_id]
+    // prompt_new_blocks: {}
+    // figuring out if new code blocks are required from passing the linked concept / objects codeblocks
+    // updating old code blocks
+  },
+];
 
 const promptCodeTemplate = /*html*/ `
     <div id="prompt-template" class='steps-template'>
-        <h1>Prompt Codebase</h1>
+        <h1>Prompt Codebase <img id='prompt-map' src="img/map.svg" /></h1>
         <div id="prompt-instruction">
         </div>
         <div id="prompt" contenteditable="true">...</div>
@@ -81,4 +93,3 @@ function addGeneratePrompt(div) {
   div.append(submitPrompt);
 }
 
-function togglePrompt() {}

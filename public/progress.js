@@ -65,8 +65,8 @@ function setActiveStep(step_index, init = false) {
   } else {
     // set opacity 0 to all element with class='steps-template'
     document.querySelectorAll(".steps-template").forEach((node) => {
-      // move node margin-top by node height
-      node.remove();
+      // remove node parent
+      node.parentNode.remove();
     });
   }
   if (current_step == 0) {

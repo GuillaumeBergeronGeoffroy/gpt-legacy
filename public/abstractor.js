@@ -90,7 +90,7 @@ async function abstract(code_block, type) {
 
   addAbstractValue(
     code_block,
-    data.choices[0].text,
+    data.choices[0].text.replace(/(\r\n|\n|\r)/gm, "").trim(),
     data.usage.completion_tokens,
     type
   );
