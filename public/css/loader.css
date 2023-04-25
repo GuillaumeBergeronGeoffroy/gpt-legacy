@@ -3,6 +3,10 @@
   justify-content: space-between;
   align-items: center;
 }
+#loader-btn-group .btn-red {
+  width: 40px;
+  height: 40px;
+}
 #fileList {
   /* height: 300px; */
   height: calc(100vh - 650px);
