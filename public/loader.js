@@ -50,6 +50,7 @@ function registerLoader() {
           content: fileContent,
           status: "pending",
           language: getFileLanguage(fileExtension),
+          added: formatDate(new Date()),
         };
 
         addFileItemToDOM(files_data[file_id]);
@@ -66,14 +67,18 @@ function initializeFileItemsFromFilesData() {
   if (files_data.length === 0) return;
   const fileList = document.getElementById("fileList");
   fileList.innerHTML = "";
-  for (const file in files_data) {
-    addFileItemToDOM(files_data[file]);
-  }
+  Object.values(files_data)
+    .sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    })
+    .forEach((element) => {
+      addFileItemToDOM(element);
+    });
 }
 
 function addFileItemToDOM(file) {
   const listItem = document.createElement("li");
-  listItem.innerHTML = `Title: ${file.name} - Extension: ${file.extension}`;
+  listItem.innerHTML = `<span class='log-m'>Title: ${file.name} - Extension: ${file.extension}</span><span class='log-t'>${file.added}</span>`;
   files_data_changed = true;
   listItem.onclick = () => {
     // remove dom element and remove from files_data
