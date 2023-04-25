@@ -49,12 +49,24 @@ ul {
   font-size: 1rem;
   line-height: 1.5;
   border-radius: 0.25rem;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: all 0.3s;
 }
-.btn:hover {
+.btn:hover,
+.btn.active {
   background-color: #287b2c;
   border-color: #ffffff;
+}
+.btn-red {
+  background-color: #00000000;
+  color: #e51616;
+  /* border-color: #c30707; */
+  border-radius: 500px;
+}
+.btn-red:hover,
+.btn-red.active {
+  background-color: #000000;
+  /* border-color: #e51616; */
+  color: #e51616;
 }
 /* remove input outline */
 input:focus {
@@ -64,4 +76,41 @@ input:focus {
 ::-webkit-scrollbar {
   width: 0px;
   background: transparent;
+}
+.pop-up-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.pop-up {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pop-up .btn-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pop-up .btn-group .btn {
+  margin: 0 5px;
+  border-radius: 5px !important;
+  border-color: #00000000;
+}
+.pop-up .btn-group .btn-primary {
+  background: #000000;
+  color: #287b2c;
+}
+.pop-up .btn-group .btn.active:hover {
+  border-color: #fff;
+  filter: brightness(2);
 }

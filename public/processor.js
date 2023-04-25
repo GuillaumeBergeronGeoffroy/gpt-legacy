@@ -43,6 +43,20 @@ let processor_steps = {
   // on prompt for changes / questions to / of codebase use prepend with available functions that can be used to search maps and prompt to determine a step by step process for resolving the question
 };
 
+function initProcessorSteps() {
+  processor_steps = {
+    parse: {
+      parsed_files_blocks: {},
+    },
+    abstract: {},
+    build_maps: {
+      concepts: {},
+      objects: {},
+    },
+    logs: [],
+  };
+}
+
 // running / paused state
 let processor_state = 1;
 let processPaused = false;

@@ -1,3 +1,8 @@
+#loader-btn-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 #fileList {
   /* height: 300px; */
   height: calc(100vh - 650px);

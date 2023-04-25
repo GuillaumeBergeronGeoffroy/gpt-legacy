@@ -65,3 +65,18 @@ function getVisibleText(node) {
     text += getVisibleText(node.childNodes[i]);
   return text;
 }
+
+function showConfirmationPopUp(message, confirm = function () {}) {
+  const popUp = document.createElement("div");
+  popUp.classList.add("pop-up");
+  popUp.innerHTML = /*html*/ `
+    <div class="pop-up-content">
+      <h1>${message}</h1>
+      <div class="btn-group">
+        <button class="btn btn-red active" onclick="confirm()">Yes</button>
+        <button class="btn btn-primary active" onclick="document.querySelector('.pop-up').remove()">No</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(popUp);
+}

@@ -18,8 +18,11 @@ const addCodeTemplate = /*html*/ `
                 sub-folders.
             </p>
         </div>
-        <button class="btn btn-primary mt-3" onclick="document.getElementById('fileInput').click()">Add Files</button>
-        <input class=' hidden' type="file" id="fileInput" multiple />
+        <div id='loader-btn-group' class='mt-3'>
+          <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">Add Files</button>
+          <button class="btn btn-red" onclick="showConfirmationPopUp('Clear all codebase data?', clearLocalStorage)">↺</button>
+        </div>
+        <input class='hidden' type="file" id="fileInput" multiple />
         <ul id="fileList"></ul>
     </div>`;
 
@@ -110,4 +113,12 @@ function getFileListFromLocalStorage() {
   } catch (e) {
     console.log(e);
   }
+}
+
+function clearLocalStorage() {
+  localStorage.removeItem("files");
+  files_data = {};
+  initializeFileItemsFromFilesData();
+  localStorage.removeItem("processor_steps");
+  initProcessorStep();
 }
