@@ -1,9 +1,11 @@
 #fileList {
-  height: 300px;
+  /* height: 300px; */
+  height: calc(100vh - 650px);
   overflow: scroll;
   border: 5px solid #181818;
   margin-top: 25px;
   border-radius: 5px;
+  min-height: 300px;
 }
 #fileList li {
   width: calc(100% - 20px);
@@ -18,4 +20,9 @@
 }
 #fileList li:hover {
   background: #780101;
+}
+#fileList li .log-t {
+  display: block;
+  font-size: 12px;
+  color: #3fbe46;
 }

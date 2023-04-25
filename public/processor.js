@@ -58,9 +58,9 @@ const processCodeTemplate = /*html*/ `
             <!-- <p class="small text-muted"> -->
               <!-- * In the works is a toggleable view that will display the codebase files in their parsed & abstract form. -->
             <!-- </p> -->
-            <div id='process-progress-bar'></div>
         </div>
         <ul id="logsList"></ul>
+        <div id='process-progress-bar'></div>
     </div>`;
 
 function registerProcessor(init = false) {

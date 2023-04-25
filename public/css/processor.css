@@ -3,7 +3,7 @@
 }
 #process-progress-bar {
   position: absolute;
-  bottom: -335px;
+  bottom: 0px;
   width: 0%;
   height: 5px;
   background: #3fbe46;
@@ -14,16 +14,18 @@
   transition: 0.5s all;
 }
 #logsList {
-  height: 300px;
+  /* height: 300px; */
+  height: calc(100vh - 484px);
   overflow: scroll;
   border: 5px solid #181818;
   margin-top: 25px;
   border-radius: 5px;
+  min-height: 300px;
 }
 #logsList li {
   width: calc(100% - 20px);
-  padding: 10px;
-  padding-top: 14px;
+  padding: 7px;
+  padding-top: 11px;
   font-size: 16px;
   line-height: 22px;
 }
